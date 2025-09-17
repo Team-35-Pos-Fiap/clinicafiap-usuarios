@@ -71,13 +71,11 @@ public class UsuarioService implements IUsuarioService, ApplicationRunner {
 		
 		if(isAtivo) { 
 			usuario.reativar();
-
-			salvar(usuario);
 		} else {
 			usuario.inativar();
-		
-			inativar(usuario);
 		}
+
+		salvar(usuario);
 	}
 
 	@Override
@@ -162,10 +160,6 @@ public class UsuarioService implements IUsuarioService, ApplicationRunner {
 
 	private void salvar(UsuarioDb usuario) {
 		usuarioRepository.salvar(usuario);
-	}
-
-	private void inativar(UsuarioDb usuario) {
-		usuarioRepository.inativar(usuario);
 	}
 	
 	private List<PerfilDtoResponse> carregarPerfis() {

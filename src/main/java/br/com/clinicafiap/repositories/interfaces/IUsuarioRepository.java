@@ -9,6 +9,5 @@ public interface IUsuarioRepository {
     UsuarioDb recuperaDadosUsuarioPorId(UUID id);
     List<UsuarioDb> buscarUsuariosPorPerfil(Integer idPerfil);
     void salvar(UsuarioDb usuario);
-    void inativar(UsuarioDb usuario);
     boolean emailJaCadastrado(String email);
 }

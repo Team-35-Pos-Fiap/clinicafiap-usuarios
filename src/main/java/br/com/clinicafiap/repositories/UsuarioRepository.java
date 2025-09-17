@@ -5,7 +5,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 
@@ -43,14 +42,8 @@ public class UsuarioRepository implements IUsuarioRepository {
 	}
 	
 	@Override
-	@CacheEvict(value = "usuarios_por_perfil", allEntries = true, key = "#root.idPerfil")
+	@CacheEvict(value = "usuarios_por_perfil", key = "#usuario.perfil.id")
 	public void salvar(UsuarioDb usuario) {
-		usuarioRepository.save(usuario);
-	}
-	
-	@Override
-	@CacheEvict(value = "usuarios_por_perfil", allEntries = true)
-	public void inativar(UsuarioDb usuario) {
 		usuarioRepository.save(usuario);
 	}
 
@@ -58,11 +51,7 @@ public class UsuarioRepository implements IUsuarioRepository {
 	public boolean emailJaCadastrado(String email) {
 		return usuarioRepository.existsByEmail(email);
 	}
-	
-	private void salvarUsuario(UsuarioDb usuario) {		
-		usuarioRepository.save(usuario);
-	}
-	
+
 	private UsuarioDb getUsuarioEntity(Optional<UsuarioDb> dadosUsuario) {
 		if(dadosUsuario.isPresent()) {
 			return dadosUsuario.get();

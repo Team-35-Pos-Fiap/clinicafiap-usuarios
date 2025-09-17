@@ -23,10 +23,26 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ANT_PATH_MATCHER
+  management:
+    endpoints:
+      web:
+        exposure:
+          include: '*'
+        base-path: '/'
+        path-mapping:
+          prometheus: 'metrics'
+    endpoint:
+      prometheus:
+        enabled: true
+        path: /actuator/prometheus
+      metrics:
+        enabled: true
+      health:
+        show-details: always
 server:
   servlet:
     context-path: /usuarios-service
-    port: 8080
+  port: 8085
 resilience4j:
   circuitbreaker:
     configs:
@@ -57,3 +73,11 @@ resilience4j:
     instances:
       usuarios:
         baseConfig: default
+eureka:
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+  instance:
+    hostname: localhost

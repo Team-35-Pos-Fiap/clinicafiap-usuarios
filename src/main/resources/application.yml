@@ -81,3 +81,8 @@ eureka:
       defaultZone: http://localhost:8761/eureka
   instance:
     hostname: localhost
+security:
+  jwt:
+    issuer: ${JWT_ISSUER:usuarios-service}
+    expires-min: ${JWT_EXPIRES_MIN:60}
+    kid: ${JWT_KID:key-dev}

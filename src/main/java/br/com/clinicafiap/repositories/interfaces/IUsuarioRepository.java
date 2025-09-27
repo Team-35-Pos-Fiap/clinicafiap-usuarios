@@ -7,6 +7,7 @@ import br.com.clinicafiap.entities.db.UsuarioDb;
 
 public interface IUsuarioRepository {
     UsuarioDb recuperaDadosUsuarioPorId(UUID id);
+    UsuarioDb recuperarDaodsUsuarioPorEmail(String email);
     List<UsuarioDb> buscarUsuariosPorPerfil(Integer idPerfil);
     void salvar(UsuarioDb usuario);
     boolean emailJaCadastrado(String email);

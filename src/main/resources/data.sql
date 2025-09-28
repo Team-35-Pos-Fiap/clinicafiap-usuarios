@@ -1,6 +1,6 @@
 ---- perfis ----
 
-insert into perfil (nome) values ('Médico');
+insert into perfil (nome) values ('Medico');
 insert into perfil (nome) values ('Enfermeiro');
 insert into perfil (nome) values ('Paciente');
 

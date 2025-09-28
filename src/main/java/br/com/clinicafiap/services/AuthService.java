@@ -1,11 +1,13 @@
 package br.com.clinicafiap.services;
 
+import br.com.clinicafiap.entities.db.UsuarioDb;
 import br.com.clinicafiap.entities.dto.LoginDtoRequest;
 import br.com.clinicafiap.entities.dto.TokenDtoResponse;
 import br.com.clinicafiap.repositories.UsuarioRepository;
 import br.com.clinicafiap.security.JwtSigner;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,27 +31,39 @@ public class AuthService {
     }
 
     public TokenDtoResponse autenticar(LoginDtoRequest loginDtoRequest) {
-        String email = loginDtoRequest.email();
-        String senha = loginDtoRequest.senha();
+        autenticarCredenciais(loginDtoRequest.email(), loginDtoRequest.senha());
+        UserDetails userDetails = carregarUserDetails(loginDtoRequest.email());
+        UsuarioDb usuario = buscarUsuario(loginDtoRequest.email());
+        String role = extrairRole(usuario);
+        String token = gerarToken(userDetails, usuario, role);
+        return montarResposta(token, usuario, role);
+    }
 
-        // 1) Autentica credenciais
+    private void autenticarCredenciais(String email, String senha) {
         authManager.authenticate(new UsernamePasswordAuthenticationToken(email, senha));
+    }
 
-        // 2) Carrega detalhes do usuário
-        var userDetails = usuarioDetailsService.loadUserByUsername(email);
-        var usuario = usuarioRepository.recuperarDaodsUsuarioPorEmail(email);
+    private UserDetails carregarUserDetails(String email) {
+        return usuarioDetailsService.loadUserByUsername(email);
+    }
 
-        // 3) Extrai role a partir do Perfil
-        String role = "ROLE_" + usuario.getPerfil().getNome().toUpperCase();
+    private UsuarioDb buscarUsuario(String email) {
+        return usuarioRepository.recuperarDaodsUsuarioPorEmail(email);
+    }
 
-        // 4) Gera JWT
-        String token = jwtSigner.sign(
+    private String extrairRole(UsuarioDb usuario) {
+        return "ROLE_" + usuario.getPerfil().getNome().toUpperCase();
+    }
+
+    private String gerarToken(UserDetails userDetails, UsuarioDb usuario, String role) {
+        return jwtSigner.sign(
             userDetails.getUsername(),
             usuario.getId().toString(),
             List.of(role)
         );
+    }
 
-        // 5) Retorna DTO
+    private TokenDtoResponse montarResposta(String token, UsuarioDb usuario, String role) {
         return new TokenDtoResponse(token, usuario.getId().toString(), role);
     }
 }

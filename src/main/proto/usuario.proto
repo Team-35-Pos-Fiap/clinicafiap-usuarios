@@ -1,0 +1,65 @@
+syntax = "proto3";
+
+package clinicafiap;
+
+option java_multiple_files = true;
+option java_package = "br.com.clinicafiap.grpc.usuario";
+option java_outer_classname = "UsuarioProto";
+
+enum TipoPerfil {
+  MEDICO = 0;
+  PACIENTE = 1;
+  ENFERMEIRO = 2;
+  TIPO_PERFIL_INDEFINIDO = 3;
+}
+
+message GetUsuarioRequest {
+  string id = 1;
+}
+
+message GetUsuariosRequest {
+  repeated string ids = 1;
+}
+
+message UsuarioResponse {
+  string id = 1;
+  string nome = 2;
+  string email = 3;
+  bool ativo = 4;
+  TipoPerfil perfil = 5;
+}
+
+message GetUsuariosResponse {
+  repeated UsuarioResponse usuarios = 1;
+  repeated string not_found_ids = 2;
+}
+
+message ValidaUsuariosParaAgendamentoRequest {
+    string id_medico = 1;
+    string id_paciente = 2;
+    string id_usuario_criacao = 3;
+}
+
+message ErroValidacao {
+  string campo = 1;
+  string codigo = 2;
+  string mensagem = 3;
+}
+
+message ValidaUsuariosParaAgendamentoResponse {
+  UsuarioResponse medico = 1;
+  UsuarioResponse paciente = 2;
+  UsuarioResponse usuario_criacao = 3;
+  repeated ErroValidacao erros = 4;
+}
+
+service UsuarioService {
+  rpc GetUsuario(GetUsuarioRequest) returns (UsuarioResponse);
+  rpc GetUsuarios(GetUsuariosRequest) returns (GetUsuariosResponse);
+  rpc ValidaUsuariosParaAgendamento(ValidaUsuariosParaAgendamentoRequest) returns (ValidaUsuariosParaAgendamentoResponse);
+}
+
+
+
+
+

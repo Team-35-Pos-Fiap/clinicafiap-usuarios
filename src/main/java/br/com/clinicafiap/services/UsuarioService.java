@@ -62,10 +62,13 @@ public class UsuarioService implements IUsuarioService, ApplicationRunner {
 	}
 	
 	@Override
-	public void cadastrar(UsuarioDtoRequest usuario) {
+	public UsuarioDtoResponse cadastrar(UsuarioDtoRequest usuario) {
 		verificaEmailCadastrado(usuario.email());
 
 		salvar(toUsuario(usuario));
+
+		var novoUsuario = usuarioRepository.recuperarDaodsUsuarioPorEmail(usuario.email());
+		return toUsuarioDto(toUsuario(novoUsuario));
 	}
 
 	@Override

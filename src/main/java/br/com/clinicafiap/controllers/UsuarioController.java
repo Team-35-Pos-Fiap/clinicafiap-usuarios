@@ -37,12 +37,13 @@ public class UsuarioController {
 	}
 
 	@PostMapping
-	public ResponseEntity<Void> cadastrar(@Valid @RequestBody @NotNull UsuarioDtoRequest usuario) {
+	public ResponseEntity<UsuarioDtoResponse> cadastrar(@Valid @RequestBody @NotNull UsuarioDtoRequest usuario) {
 		log.info("cadastrar():dados do usuário {}", usuario);
 		
-		usuarioService.cadastrar(usuario);
-		
-		return ResponseEntity.status(HttpStatus.CREATED).build();
+//		usuarioService.cadastrar(usuario);
+//
+//		return ResponseEntity.status(HttpStatus.CREATED).build();
+		return ResponseEntity.status(HttpStatus.CREATED).body(usuarioService.cadastrar(usuario));
 	}
 
 	@PreAuthorize("#id == principal.uid")

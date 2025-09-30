@@ -8,6 +8,6 @@ RUN mvn clean install
 
 FROM eclipse-temurin:21-jre
 WORKDIR /app
-EXPOSE 8080
+EXPOSE 8080 9090
 COPY --from=builder /app/target/*.jar usuarios.jar
 ENTRYPOINT ["java", "-jar", "usuarios.jar"]

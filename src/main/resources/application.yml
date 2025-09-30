@@ -81,6 +81,9 @@ eureka:
       defaultZone: http://localhost:8761/eureka
   instance:
     hostname: localhost
+grpc:
+  server:
+    port: 9090
 security:
   jwt:
     issuer: ${JWT_ISSUER:usuarios-service}

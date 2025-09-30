@@ -1,0 +1,88 @@
+spring:
+  application:
+    name: usuarios-service
+  datasource:
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:mem:usuarios;DB_CLOSE_DELAY=-1;AUTO_RECONNECT=TRUE;MODE=MySQL;
+    username: admin
+    password: 123
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: none
+    defer-datasource-initialization: true
+    show-sql: true
+  sql:
+    init:
+      mode: always
+  h2:
+    console:
+      enabled: true
+  messages:
+    encoding: ISO-8859-1
+  mvc:
+    pathmatch:
+      matching-strategy: ANT_PATH_MATCHER
+  management:
+    endpoints:
+      web:
+        exposure:
+          include: '*'
+        base-path: '/'
+        path-mapping:
+          prometheus: 'metrics'
+    endpoint:
+      prometheus:
+        enabled: true
+        path: /actuator/prometheus
+      metrics:
+        enabled: true
+      health:
+        show-details: always
+server:
+  servlet:
+    context-path: /
+  port: 0
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        slidingWindowSize: 10 # Total de requisições para serem utilizadas como base do cálculo de falhas.
+        permittedNumberOfCallsInHalfOpenState: 3 # Total de conexões permitidas no estado de meio aberto.
+        slidingWindowType: count-based # Tipo de janela: contagem de requisições.
+        automaticTransitionFromOpenToHalfOpenEnabled: true # Muda do estado aberto para o estado meio aberto sem a necessidade de uma nova requisição.
+        minimumNumberOfCalls: 5 # Mínimo de requisições para serem calculadas antes do cálculo da taxa de erros.
+        waitDurationInOpenState: 10s # Tempo de duração no estado aberto.
+        ignoreExceptions:
+          - br.com.clinicafiap.services.exceptions.PerfilNaoEncontradoException
+          - br.com.clinicafiap.services.exceptions.UsuarioNaoEncontradoException
+          - br.com.clinicafiap.services.exceptions.EmailDuplicadoException
+    instances:
+      usuarios:
+        baseConfig: default
+        failureRateThreshold: 30 # Percentual de falhas para abrir o circuito.
+  retry:
+    configs:
+      default:
+        max-attempts: 3
+        wait-duration: 1s # Tempo de espera entre as requisições.
+        ignoreExceptions:
+          - br.com.clinicafiap.services.exceptions.PerfilNaoEncontradoException
+          - br.com.clinicafiap.services.exceptions.UsuarioNaoEncontradoException
+          - br.com.clinicafiap.services.exceptions.EmailDuplicadoException
+    instances:
+      usuarios:
+        baseConfig: default
+eureka:
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    service-url:
+      defaultZone: http://controle-servicos:8761/eureka
+  instance:
+    hostname: usuarios-service
+security:
+  jwt:
+    issuer: ${JWT_ISSUER:usuarios-service}
+    expires-min: ${JWT_EXPIRES_MIN:60}
+    kid: ${JWT_KID:key-dev}

@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.cache.CacheManager;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import br.com.clinicafiap.entities.db.UsuarioDb;
@@ -30,16 +31,18 @@ public class UsuarioService implements IUsuarioService, ApplicationRunner {
 
 	private final IUsuarioRepository usuarioRepository;
 	private final IPerfilService perfilService;
+	private final PasswordEncoder passwordEncoder;
 	
 	private final CacheManager cacheManager;
 	
 	private final String CACHE_USUARIOS_POR_PERFIL = "usuarios_por_perfil";
 	private final String CACHE_USUARIO = "usuario";
 
-	public UsuarioService(IUsuarioRepository usuarioRepository, CacheManager cacheManager, IPerfilService perfilService) {
+	public UsuarioService(IUsuarioRepository usuarioRepository, CacheManager cacheManager, IPerfilService perfilService, PasswordEncoder passwordEncoder) {
 		this.usuarioRepository = usuarioRepository;
 		this.cacheManager = cacheManager;
 		this.perfilService = perfilService;
+		this.passwordEncoder = passwordEncoder;
 	}
 
 	@Override
@@ -59,10 +62,13 @@ public class UsuarioService implements IUsuarioService, ApplicationRunner {
 	}
 	
 	@Override
-	public void cadastrar(UsuarioDtoRequest usuario) {
+	public UsuarioDtoResponse cadastrar(UsuarioDtoRequest usuario) {
 		verificaEmailCadastrado(usuario.email());
 
 		salvar(toUsuario(usuario));
+
+		var novoUsuario = usuarioRepository.recuperarDaodsUsuarioPorEmail(usuario.email());
+		return toUsuarioDto(toUsuario(novoUsuario));
 	}
 
 	@Override
@@ -103,7 +109,7 @@ public class UsuarioService implements IUsuarioService, ApplicationRunner {
 		UsuarioDb usuario = buscarUsuarioPorId(id);
 		
 		usuario.atualizarSenha(senha);
-		
+		usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
 		salvar(usuario);
 	}
 	
@@ -159,6 +165,7 @@ public class UsuarioService implements IUsuarioService, ApplicationRunner {
 	}
 
 	private void salvar(UsuarioDb usuario) {
+
 		usuarioRepository.salvar(usuario);
 	}
 	
@@ -179,6 +186,6 @@ public class UsuarioService implements IUsuarioService, ApplicationRunner {
 	}
 	
 	private Usuario toUsuario(UsuarioDtoRequest usuario) {
-		return UsuarioMapper.toUsuario(usuario);
+		return UsuarioMapper.toUsuario(usuario, passwordEncoder);
 	}
 }

@@ -3,6 +3,7 @@ package br.com.clinicafiap.mappers;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import br.com.clinicafiap.entities.db.UsuarioDb;
@@ -17,13 +18,14 @@ public abstract class UsuarioMapper {
 	
 	// 1 - record -> domain
 
-	public static Usuario toUsuario(UsuarioDtoRequest usuario) {
+	public static Usuario toUsuario(UsuarioDtoRequest usuario, PasswordEncoder encoder) {
+		String senhaHash = encoder.encode(usuario.senha());
 		return new Usuario(null,
-					       usuario.nome(), 
-					       usuario.email(), 
-					       usuario.senha(),
-					       true,
-					       PerfilMapper.toPerfil(usuario.perfil()));
+			usuario.nome(),
+			usuario.email(),
+			senhaHash,
+			true,
+			PerfilMapper.toPerfil(usuario.perfil()));
 	}
 
 	// 2 - domain -> entity

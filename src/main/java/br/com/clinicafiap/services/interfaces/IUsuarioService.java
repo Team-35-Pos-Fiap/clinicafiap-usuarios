@@ -12,7 +12,7 @@ import jakarta.validation.constraints.NotNull;
 public interface IUsuarioService {
     UsuarioDtoResponse buscarPorId(UUID id);
     List<UsuarioDtoResponse> buscarUsuariosPorPerfil(Integer idPerfil);
-    void cadastrar(UsuarioDtoRequest usuario);
+    UsuarioDtoResponse cadastrar(UsuarioDtoRequest usuario);
     void atualizarStatus(UUID id, boolean isAtivo);
     void atualizarNome(UUID id, String nome);
     void atualizarEmail(UUID id, String email);

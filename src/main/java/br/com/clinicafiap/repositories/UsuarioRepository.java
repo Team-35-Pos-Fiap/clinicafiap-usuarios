@@ -30,6 +30,11 @@ public class UsuarioRepository implements IUsuarioRepository {
 	}
 
 	@Override
+	public UsuarioDb recuperarDaodsUsuarioPorEmail(String email) {
+		return getUsuarioEntity(usuarioRepository.findByEmail(email));
+	}
+
+	@Override
 	@Cacheable(value = "usuarios_por_perfil", key = "#idPerfil")
 	public List<UsuarioDb> buscarUsuariosPorPerfil(Integer idPerfil) {
 		List<UsuarioDb> usuarios = usuarioRepository.buscarUsuariosPorPerfil(idPerfil);

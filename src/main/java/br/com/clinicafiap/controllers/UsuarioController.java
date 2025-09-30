@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,14 +37,16 @@ public class UsuarioController {
 	}
 
 	@PostMapping
-	public ResponseEntity<Void> cadastrar(@Valid @RequestBody @NotNull UsuarioDtoRequest usuario) {
+	public ResponseEntity<UsuarioDtoResponse> cadastrar(@Valid @RequestBody @NotNull UsuarioDtoRequest usuario) {
 		log.info("cadastrar():dados do usuário {}", usuario);
 		
-		usuarioService.cadastrar(usuario);
-		
-		return ResponseEntity.status(HttpStatus.CREATED).build();
+//		usuarioService.cadastrar(usuario);
+//
+//		return ResponseEntity.status(HttpStatus.CREATED).build();
+		return ResponseEntity.status(HttpStatus.CREATED).body(usuarioService.cadastrar(usuario));
 	}
 
+	@PreAuthorize("#id == principal.uid")
 	@PatchMapping("/{id}/status/inativa")
 	public ResponseEntity<MensagemResponse> inativar(@Valid @PathVariable @NotNull UUID id) {
 		log.info("inativar():id {}", id);
@@ -52,7 +55,8 @@ public class UsuarioController {
 
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build(); 
 	}
-	
+
+	@PreAuthorize("#id == principal.uid")
 	@PatchMapping("/{id}/status/reativa")
 	public ResponseEntity<MensagemResponse> reativar(@Valid @PathVariable @NotNull UUID id) {
 		log.info("reativar():id {}", id);
@@ -61,14 +65,16 @@ public class UsuarioController {
 
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build(); 
 	}
-	
+
+	@PreAuthorize("#id == principal.uid or hasAnyRole('MEDICO','ENFERMEIRO')")
 	@GetMapping("/{id}")
 	public ResponseEntity<UsuarioDtoResponse> buscarUsuarioPorId(@PathVariable @NotNull @Valid UUID id) {
 		log.info("buscarUsuarioPorId() - id {}", id);
 		
 		return ResponseEntity.ok().body(usuarioService.buscarPorId(id));
 	}
-	
+
+	@PreAuthorize("hasAnyRole('MEDICO','ENFERMEIRO')")
 	@GetMapping("/perfil/{id}")
 	public ResponseEntity<List<UsuarioDtoResponse>> buscarUsuariosPorPerfil(@PathVariable(name = "id") @NotNull @Valid Integer idPerfil) {
 		log.info("buscarUsuarios() - perfil: {}", idPerfil);
@@ -76,6 +82,7 @@ public class UsuarioController {
 		return ResponseEntity.ok().body(usuarioService.buscarUsuariosPorPerfil(idPerfil));
 	}
 
+	@PreAuthorize("#id == principal.uid")
 	@PatchMapping("/{id}/nome")
 	public ResponseEntity<Void> atualizarNome(@Valid @PathVariable @NotNull UUID id, @Valid @RequestBody @NotNull NomeDtoRequest dados) {
 		usuarioService.atualizarNome(id, dados.nome());
@@ -83,13 +90,15 @@ public class UsuarioController {
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build(); 
 	}
 
+	@PreAuthorize("#id == principal.uid")
 	@PatchMapping("/{id}/email")
 	public ResponseEntity<Void> atualizarEmail(@Valid @PathVariable @NotNull UUID id, @Valid @RequestBody @NotNull EmailDtoRequest dados) {
 		usuarioService.atualizarEmail(id, dados.email());
 
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build(); 
 	}
-	
+
+	@PreAuthorize("#id == principal.uid")
 	@PatchMapping("/{id}/senha")
 	public ResponseEntity<Void> atualizarSenha(@Valid @PathVariable @NotNull UUID id, @Valid @RequestBody @NotNull SenhaDtoRequest dados) {
 		usuarioService.atualizarSenha(id, dados.senha());

@@ -68,7 +68,7 @@ resilience4j:
         wait-duration: 1s # Tempo de espera entre as requisições.
         ignoreExceptions:
           - br.com.clinicafiap.services.exceptions.PerfilNaoEncontradoException
-          - br.com.clinicafiap.services.exceptions.UsuarioNaoEncontradoException  
+          - br.com.clinicafiap.services.exceptions.UsuarioNaoEncontradoException
           - br.com.clinicafiap.services.exceptions.EmailDuplicadoException
     instances:
       usuarios:
@@ -78,12 +78,9 @@ eureka:
     registerWithEureka: true
     fetchRegistry: true
     service-url:
-      defaultZone: http://localhost:8761/eureka
+      defaultZone: http://controle-servicos:8761/eureka
   instance:
-    hostname: localhost
-grpc:
-  server:
-    port: 9090
+    hostname: usuarios-service
 security:
   jwt:
     issuer: ${JWT_ISSUER:usuarios-service}

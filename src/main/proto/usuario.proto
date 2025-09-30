@@ -17,27 +17,16 @@ message GetUsuarioRequest {
   string id = 1;
 }
 
-message GetUsuariosRequest {
-  repeated string ids = 1;
-}
-
 message UsuarioResponse {
   string id = 1;
   string nome = 2;
-  string email = 3;
-  bool ativo = 4;
   TipoPerfil perfil = 5;
 }
 
-message GetUsuariosResponse {
-  repeated UsuarioResponse usuarios = 1;
-  repeated string not_found_ids = 2;
-}
-
 message ValidaUsuariosParaAgendamentoRequest {
-    string id_medico = 1;
-    string id_paciente = 2;
-    string id_usuario_criacao = 3;
+  string id_medico = 1;
+  string id_paciente = 2;
+  string id_usuario_criacao = 3;
 }
 
 message ErroValidacao {
@@ -55,11 +44,5 @@ message ValidaUsuariosParaAgendamentoResponse {
 
 service UsuarioService {
   rpc GetUsuario(GetUsuarioRequest) returns (UsuarioResponse);
-  rpc GetUsuarios(GetUsuariosRequest) returns (GetUsuariosResponse);
   rpc ValidaUsuariosParaAgendamento(ValidaUsuariosParaAgendamentoRequest) returns (ValidaUsuariosParaAgendamentoResponse);
 }
-
-
-
-
-

@@ -84,6 +84,8 @@ eureka:
 grpc:
   server:
     port: 9090
+    security:
+      enabled: false
 security:
   jwt:
     issuer: ${JWT_ISSUER:usuarios-service}

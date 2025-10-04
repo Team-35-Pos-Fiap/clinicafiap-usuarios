@@ -81,6 +81,11 @@ eureka:
       defaultZone: http://controle-servicos:8761/eureka
   instance:
     hostname: usuarios-service
+grpc:
+  server:
+    port: 9090
+    security:
+      enabled: false
 security:
   jwt:
     issuer: ${JWT_ISSUER:usuarios-service}

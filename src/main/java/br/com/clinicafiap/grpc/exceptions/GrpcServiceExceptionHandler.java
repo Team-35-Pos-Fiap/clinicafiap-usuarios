@@ -9,7 +9,7 @@ import io.grpc.Status;
 @GrpcAdvice
 public class GrpcServiceExceptionHandler {
 
-    @GrpcExceptionHandler(UsuarioNaoEncontradoException.class)
+    @GrpcExceptionHandler(br.com.clinicafiap.services.exceptions.UsuarioNaoEncontradoException.class)
     public Status handleUsuarioNaoEncontradoException(UsuarioNaoEncontradoException e) {
         return Status.NOT_FOUND.withDescription(
                 e.getMessage() != null ? e.getMessage() : "Usuário não encontrado"

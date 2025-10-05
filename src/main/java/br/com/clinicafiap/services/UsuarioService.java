@@ -136,7 +136,9 @@ public class UsuarioService implements IUsuarioService, ApplicationRunner {
 	
 	private UsuarioDtoResponse recuperarUsuarioNoCache(UUID id, Throwable t) {
 		log.info("Método de fallback da busca de usuário pelo id {}.", id);
-		
+
+		validaRetornoFallback(t);
+
 		return toUsuarioDto(toUsuario(recuperarUsuarioNoCache(id)));
 	}
 	
@@ -187,5 +189,16 @@ public class UsuarioService implements IUsuarioService, ApplicationRunner {
 	
 	private Usuario toUsuario(UsuarioDtoRequest usuario) {
 		return UsuarioMapper.toUsuario(usuario, passwordEncoder);
+	}
+
+	private void validaRetornoFallback(Throwable throwable) {
+		if (throwable instanceof br.com.clinicafiap.services.exceptions.UsuarioNaoEncontradoException
+				|| throwable instanceof br.com.clinicafiap.services.exceptions.PerfilNaoEncontradoException
+				|| throwable instanceof br.com.clinicafiap.services.exceptions.EmailDuplicadoException
+				|| throwable instanceof IllegalArgumentException
+				|| throwable instanceof jakarta.validation.ConstraintViolationException) {
+			if (throwable instanceof RuntimeException re) throw re;
+			throw new RuntimeException(throwable);
+		}
 	}
 }

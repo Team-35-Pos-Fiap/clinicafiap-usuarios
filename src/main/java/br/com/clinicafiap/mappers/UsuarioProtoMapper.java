@@ -25,6 +25,7 @@ public class UsuarioProtoMapper {
         return UsuarioResponse.newBuilder()
                 .setId(String.valueOf(usuarioDtoResponse.id()))
                 .setNome(usuarioDtoResponse.nome())
+                .setEmail(usuarioDtoResponse.email())
                 .setPerfil(tipoPerfil)
                 .build();
     }
